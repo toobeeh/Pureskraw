@@ -34,6 +34,7 @@ let setPickerButton = (pickerElement, canvasElement) => {
 }
 
 let titleScreen = document.querySelector("#title");
+let loginName = document.querySelector("#loginName");
 let canvasContainer = document.querySelector("#containerCanvas");
 let canvas = setTitleCanvas(titleSize.w, titleSize.h, titleScreen, canvasContainer);
 let pickerBtn = document.createElement("button");
@@ -42,7 +43,7 @@ let peer = null;
 
 let createSession = document.querySelector("#createSession");
 createSession.addEventListener("click", () => {
-    peer = new Node("node69");
+    peer = new Node(loginName.value);
     peer.events.addEventListener("create", e => {
         alert(`Session with id ${e.detail.id} created.`);
         canvas = setGameCanvas(titleSize.w, titleSize.h, canvasContainer);
@@ -56,7 +57,7 @@ createSession.addEventListener("click", () => {
 let sessionCode = document.querySelector("#sessionCode");
 let joinSession = document.querySelector("#joinSession");
 joinSession.addEventListener("click", () => {
-    peer = new End(sessionCode.value, "coolend420");
+    peer = new End(sessionCode.value, loginName.value);
     peer.events.addEventListener("connect", e => {
         alert(`Connected to session with host username ${e.detail.username}.`);
         canvas = setGameCanvas(titleSize.w, titleSize.h, canvasContainer);

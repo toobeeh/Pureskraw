@@ -15,10 +15,11 @@ html,body{
     box-sizing:border-box;
 }
 
-body{
-    background-image:url("../res/backgroundBlue.png");
-    background-size:100px 100px;
-    image-rendering:pixelated;
+body {
+    background-image: url("../res/backgroundBlue.png");
+    background-size: 100px 100px;
+    image-rendering: pixelated;
+    font-family: 'Poppins', sans-serif;
 }
 
 .full{
@@ -70,7 +71,40 @@ body{
 }
 #titleNav > div{
     align-self:flex-start !important;
+    width:20%;
 }
 #title{
     position:absolute;
+}
+#titleHead > h2{
+    display:inline;
+}
+h1{
+    font-size:1.3rem;
+}
+h2{
+    font-size:1.1rem;
+}
+
+button {
+    font-size: 1.1rem;
+    padding: 0.5rem;
+    margin: 0.5rem;
+    border-radius: 0.5rem;
+    width: 100%;
+    background-image: url(../res/backgroundRed.png);
+    background-size: contain;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+input {
+    font-size: 1.2rem;
+    padding: 0.5rem;
+    margin: 0.5rem;
+    border-radius: 0.5rem;
+    border: 2px solid black;
+    outline:none !important;
+    box-sizing:border-box;
+    max-width:100%;
 }
