@@ -29,9 +29,9 @@ class Canvas {
     
     // constructor; set properties and load events
     constructor(width, height, brushMinSize = 3, brushMaxSize = 50,
-            keyOptions = { erase: "e", brush: "b", fill: "f", clear: "escape" }) {
+            keyOptions = { erase: "e", brush: "b", fill: "f", clear: "escape" }, id = "canvasDrawing") {
         this._element = document.createElement("canvas");
-        this._element.id = "canvasDrawing";
+        this._element.id = id;
         this._element.height = height; 
         this._element.width = width;
         this.clearCanvas();
@@ -283,6 +283,7 @@ class Canvas {
     clearCanvas() {
         this.context.fillStyle = "white";
         this.context.fillRect(0, 0, this.width, this.height);
+        this.takeSnapshot();
     }
     // returns a value checked for given boundaries
     setNumberBoundaries(number, boundaryMin, boundaryMax) {

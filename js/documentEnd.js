@@ -13,7 +13,7 @@ let setTitleCanvas = (w, h, titleContainer, canvasContainer) => {
 
 let setGameCanvas = (w, h, canvasContainer) => {
     let canvasgame = new Canvas(w, h);
-    canvasContainer.querySelector("canvas").remove();
+    canvasContainer.querySelector("#canvasDrawing").remove();
     canvasContainer.appendChild(canvasgame.element);
     canvasgame.setKeyAction("Z", () => { canvas.lastSnapshot(); });
     canvasgame.setKeyAction("Y", () => { canvas.nextSnapshot(); });
@@ -68,9 +68,13 @@ let titleScreen = document.querySelector("#title");
 let loginName = document.querySelector("#loginName");
 let canvasContainer = document.querySelector("#containerCanvas");
 let canvas;
+let canvasAvatar;
 let pickerBtn = document.createElement("button");
 let picker = null;
 let peer = null;
 document.addEventListener("DOMContentLoaded", () => {
     canvas = setTitleCanvas(titleSize.w, titleSize.h, titleScreen, canvasContainer);
+    canvasAvatar = new Canvas(150, 150, 3, 3, { erase: "e", brush: "b" }, "canvasCreateAvatar");
+    document.querySelector("#canvasAvatar").replaceWith(canvasAvatar.element);
+    canvasAvatar.element.style = "border: 2px solid black; border-radius:5px;";
 });
