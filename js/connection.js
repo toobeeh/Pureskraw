@@ -62,7 +62,8 @@ class End {
 const messageGenerator = {
     connected: (endID, username) => { return { event: "connected", id: endID, detail: { username: username, id: endID} }; },
     connect: (endID, username) => { return { event: "connect", id: endID, detail: { username: username, id: endID } }; },
-    drawcommand: (endID, username, commands) => { return { event: "drawcommand", id: endID, detail: { username: username, id: endID, commands: commands } }; }
+    drawcommand: (endID, username, commands) => { return { event: "drawcommand", id: endID, detail: { username: username, id: endID, commands: commands } }; },
+    snapshot: (endID, username, snapshot) => { return { event: "snapshot", id: endID, detail: { username: username, id: endID, snapshot: snapshot } }; },
 }
 
 class ConnectionHandler { 
@@ -75,10 +76,13 @@ class ConnectionHandler {
                 this.connect(detail, end || node);
                 break;
             case "connected":
-                this.connected(detail, peer || node);
+                this.connected(detail, end || node);
                 break;
             case "drawcommand":
                 this.drawcommand(detail, node, data);
+                break;
+            case "snapshot":
+                this.snapshot(detail, end || node);
                 break;
         }
     }
@@ -88,7 +92,7 @@ class ConnectionHandler {
         peer.send(messageGenerator.connected(peer._peer.id, peer._username), detail.id);
         peer.events.dispatchEvent(new CustomEvent("connect", { detail: detail }));
     }
-    static connected = (detail) => {
+    static connected = (detail, peer) => {
         console.log(`Connected to end ${detail.id} with username ${detail.username}.`);
         peer.events.dispatchEvent(new CustomEvent("connect", { detail: detail }));
     }
@@ -97,5 +101,8 @@ class ConnectionHandler {
         if (node) node._endConnections.forEach(c => {
             if (c.connection.peer != detail.id) node.send(data, c.id);
         });
+    }
+    static snapshot = (detail, peer) => {
+        canvas.putSnapshot(detail.snapshot, true);
     }
 }

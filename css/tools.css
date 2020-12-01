@@ -3,3 +3,21 @@
     width:800px;*/
     border-radius:5px;
 }
+
+#containerTools{
+    height: 4rem;
+    margin-left:0;
+    margin-right:0;
+}
+#containerAgent{
+    max-height:15%;
+}
+#containerChat {
+}
+
+#containerSessionInfo {
+    max-height: 15%;
+}
+
+#containerChat {
+}

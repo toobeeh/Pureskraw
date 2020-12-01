@@ -1,4 +1,4 @@
-const titleSize = { w: 900, h: 600 };
+const titleSize = { w: 1000, h: 600 };
 
 let setTitleCanvas = (w, h, titleContainer, canvasContainer) => {
     let titlecanvas = new Canvas(w, h, 5, 5, { erase: "", brush: "", fill: "", clear: "" });
@@ -33,14 +33,6 @@ let setPickerButton = (pickerElement, canvasElement) => {
     return picker;
 }
 
-let titleScreen = document.querySelector("#title");
-let loginName = document.querySelector("#loginName");
-let canvasContainer = document.querySelector("#containerCanvas");
-let canvas = setTitleCanvas(titleSize.w, titleSize.h, titleScreen, canvasContainer);
-let pickerBtn = document.createElement("button");
-let picker = null; 
-let peer = null;
-
 let createSession = document.querySelector("#createSession");
 createSession.addEventListener("click", () => {
     peer = new Node(loginName.value);
@@ -51,7 +43,11 @@ createSession.addEventListener("click", () => {
         canvas.peer = peer;
         titleScreen.style.display = "none";
     });
-    peer.events.addEventListener("connect", e => { alert(`End with username ${e.detail.username} connected to session.`); });
+    peer.events.addEventListener("connect", e => {
+        alert(`End with username ${e.detail.username} connected to session.`);
+        canvas.takeSnapshot(false);
+        canvas.lastSnapshot();
+    });
 });
 
 let sessionCode = document.querySelector("#sessionCode");
@@ -65,4 +61,16 @@ joinSession.addEventListener("click", () => {
         canvas.peer = peer;
         titleScreen.style.display = "none";
     });
+});
+
+
+let titleScreen = document.querySelector("#title");
+let loginName = document.querySelector("#loginName");
+let canvasContainer = document.querySelector("#containerCanvas");
+let canvas;
+let pickerBtn = document.createElement("button");
+let picker = null;
+let peer = null;
+document.addEventListener("DOMContentLoaded", () => {
+    canvas = setTitleCanvas(titleSize.w, titleSize.h, titleScreen, canvasContainer);
 });

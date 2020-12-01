@@ -73,6 +73,7 @@ class Canvas {
     // reset vector if pointer leaves canvas
     pointerleave = e => {
         e.preventDefault();
+        if(this.brush.down)this.drawWithPointer(e);
         this.brush.down = false;
         //this.takeSnapshot();
     }
@@ -171,25 +172,40 @@ class Canvas {
     createDrawCommandErase(size, x1, y1, x2, y2) { return [1, size, x1, y1, x2, y2]; }
     createDrawCommandDraw(color, size, x1, y1, x2, y2) { return [0, color, size, x1, y1, x2, y2]; }
     takeSnapshot(clear = true) {
-        this._snapshots.push(this.context.getImageData(0, 0, this.width, this.height));
-        if (this._snapshots.length > 20) this._snapshots.shift();
-        if (this._nextSnapshots.length > 20) this._nextSnapshots.shift();
+        this._snapshots.push(this.element.toDataURL());
+        if (this._snapshots.length > 100) this._snapshots.shift();
+        if (this._nextSnapshots.length > 100) this._nextSnapshots.shift();
         if(clear)this._nextSnapshots = [];
     }
     lastSnapshot() {
         let snapshot = this._snapshots.pop();
         if (snapshot) {
             this.takeSnapshot(false);
-            this._nextSnapshots.push(this._snapshots.pop());
-            this.context.putImageData(snapshot, 0, 0);
+            this.putSnapshot(snapshot);
         }
     }
     nextSnapshot() {
         let snapshot = this._nextSnapshots.pop();
         if (snapshot) {
             this.takeSnapshot(false);
-            this.context.putImageData(snapshot, 0, 0);
+            this.putSnapshot(snapshot);
         }
+    }
+    putSnapshot(snapshot, incoming = false) {
+        if (this.peer) {
+            if (this.peer.constructor.name == "Node") {
+                this.peer._endConnections.forEach(c => {
+                    this.peer.send(messageGenerator.snapshot(this.peer.id, this.peer._username, snapshot), c.id);
+                });
+            }
+            else if (this.peer.constructor.name == "End" && !incoming) {
+                alert("End participiants can't set snapshots in a session. \nAsk the node to set one!");
+                return;
+            }
+        }
+        let image = new Image;
+        image.onload = () => { this.context.drawImage(image, 0, 0); }
+        image.src = snapshot;
     }
     addDrawCommands(commands) {
         this._bufferedCommands = [...this._bufferedCommands, ...commands];

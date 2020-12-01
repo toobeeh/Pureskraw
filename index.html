@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="css/tools.css" />
     <link rel="stylesheet" href="js/picker/colr_pickr.min.css" />
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&family=Rubik&family=Ubuntu&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&family=Ubuntu+Mono&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
     <script src="js/canvas.js"></script>
     <script src="js/connection.js"></script>
@@ -14,19 +14,22 @@
 </head>
 
 <body>
-    <div id="board" class="flex full flex--center flex--col">
-        <div class="order-1">
-            <div id="containerHead">
-                head
+    <div id="board" class="flex full flex--center flex--row">
+        <div class="order-1 grow-1 flex flex--col flex-center" style="height:100%">
+            <div id="containerSessionInfo" class="ui-box flex flex--center flex--row">
+                session
+            </div>
+            <div id="containerSession" class="ui-box flex flex--center flex--row">
+                lobby
             </div>
         </div>
-        <div class="order-2 flex flex--center flex--row">
+        <div class="order-2 flex flex--col">
             <div class="order-1">
-                <div id="containerLobby">
-                    lobby
+                <div id="containerHead">
+                    head
                 </div>
             </div>
-            <div class="order-2">
+            <div class="order-2 flex flex--center flex--row" style="width:100%">
                 <div id="containerCanvas">
                     <div id="title" class="flex flex--center flex--col">
                         <div id="titleHead" class="flex flex--center flex--row">
@@ -41,28 +44,29 @@
                             <div id="titleNavJoin" class="flex flex--center flex--col">
                                 <h2>Join session</h2>
                                 <button id="joinSession">Join</button>
-                                <input id="sessionCode" type="text" placeholder="session-code"/>
+                                <input id="sessionCode" type="text" placeholder="session-code" />
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="order-3">
-                <div class="flex flex--center flex--col">
-                    <div lass="order-1" id="containerAgent">
-                        agent
-                    </div>
-                    <div lass="order-2" id="containerChat">
-                        chat
-                    </div>
+            <div class="order-3 flex flex-row">
+                <div id="containerTools" class="grow-1 ui-box flex flex-row">
+                    tools
                 </div>
             </div>
         </div>
-        <div class="order-3">
-            <div id="containerTools">
-                tools
+        <!--<div class="order-3 grow-1">-->
+            <div class="order-3 grow-2 flex flex--col" style="height:100%">
+                <div class="order-1 ui-box flex flex--center flex--row" id="containerAgent">
+                    agent
+                </div>
+                <div class="order-2 ui-box flex flex--center flex--row" id="containerChat">
+                    chat
+                </div>
             </div>
-        </div>
+        <!--</div>-->
+
 
     </div>
 
