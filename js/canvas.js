@@ -96,7 +96,10 @@ class Canvas {
     } 
     // detect keydowns and call actions
     keydown = e => {
+        // perform actions
         this._keyActions.filter(a => a.char.toLowerCase() == e.key.toLowerCase()).forEach(a => a.action());
+        // perform keyoptions only if canvas active
+        if (document.activeElement != this.element && !this.element.matches(":hover")) return;
         switch (e.key.toLowerCase()) {
             case this.keyOptions.clear.toLowerCase():
                 this.addDrawCommands([this.createDrawCommandClear()]);
@@ -199,7 +202,7 @@ class Canvas {
                 });
             }
             else if (this.peer.constructor.name == "End" && !incoming) {
-                alert("End participiants can't set snapshots in a session. \nAsk the node to set one!");
+                addChatError("Error","End players can't set snapshots. Ask the node to set one!", errorColor);
                 return;
             }
         }

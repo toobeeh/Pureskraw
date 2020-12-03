@@ -17,7 +17,9 @@
     <div id="board" class="flex full flex--center flex--row">
         <div class="order-1 grow-1 flex flex--col flex-center" style="height:100%">
             <div id="containerSessionInfo" class="ui-box flex flex--center flex--row">
-                session
+                <div id="initInfo" class="ui-box flex flexrow flexcenter">
+                    Join or create a session to start drawing!
+                </div>
             </div>
             <div id="containerSession" class="ui-box flex flex--center flex--row">
                 lobby
@@ -60,18 +62,19 @@
                 </div>
             </div>
         </div>
-        <!--<div class="order-3 grow-1">-->
             <div class="order-3 grow-2 flex flex--col" style="height:100%">
                 <div class="order-1 ui-box flex flex--center flex--row" id="containerAgent">
                     agent
                 </div>
-                <div class="order-2 ui-box flex flex--center flex--row" id="containerChat">
-                    chat
+                <div class="order-2 ui-box flex flex--center flex--col" id="containerChat">
+                    <div id="containerMessages">
+                        
+                    </div>
+                    <div id="containerInput">
+                        <input id="inputChat" type="text" placeholder="Type and hit enter to chat" />
+                    </div>
                 </div>
             </div>
-        <!--</div>-->
-
-
     </div>
 
 
