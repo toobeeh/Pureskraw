@@ -33,6 +33,13 @@ let setGameCanvas = (w, h, canvasContainer) => {
     canvasContainer.appendChild(canvasgame.element);
     canvasgame.setKeyAction("Z", () => { canvas.lastSnapshot(); });
     canvasgame.setKeyAction("Y", () => { canvas.nextSnapshot(); });
+    let setActiveTool = (tool) => {
+        document.querySelectorAll("#modes > .tool").forEach(t => t.classList.remove("tool--selected"));
+        tool.classList.add("tool--selected");
+    }
+    document.querySelector(".tool--pen").addEventListener("pointerdown", (e) => { canvas.brush.mode = "brush"; setActiveTool(e.target); });
+    document.querySelector(".tool--fill").addEventListener("pointerdown", (e) => { canvas.brush.mode = "fill"; setActiveTool(e.target);});
+    document.querySelector(".tool--erase").addEventListener("pointerdown", (e) => { canvas.brush.mode = "erase"; setActiveTool(e.target); });
     return canvasgame;
 }
 
@@ -64,14 +71,14 @@ let addChatError = (error) => {
 }
 
 let setPickerButton = (pickerElement, canvasElement) => {
-    pickerBtn.style.display = "none";
-    canvasElement.element.parentElement.appendChild(pickerBtn);
+    //pickerBtn.style.display = "none";
+    //canvasElement.element.parentElement.appendChild(pickerBtn);
     let picker = new ColorPicker(pickerElement);
     pickerBtn.addEventListener("colorChange", (e) => {
         canvas.brush.color = Brush.getCode(new Color({ hex: e.detail.color.hex }));
     });
-    let showpicker = () => { pickerBtn.dispatchEvent(new CustomEvent("click")); canvasElement.setKeyAction("AltGraph", hidepicker); };
-    let hidepicker = () => { document.querySelector("#color_picker_bg").dispatchEvent(new CustomEvent("click")); canvasElement.setKeyAction("AltGraph", showpicker); };
+    showpicker = () => { pickerBtn.dispatchEvent(new CustomEvent("click")); canvasElement.setKeyAction("AltGraph", hidepicker); };
+    hidepicker = () => { document.querySelector("#color_picker_bg").dispatchEvent(new CustomEvent("click")); canvasElement.setKeyAction("AltGraph", showpicker); };
     canvasElement.setKeyAction("AltGraph", showpicker);
     return picker;
 }
@@ -91,9 +98,11 @@ let loginName = document.querySelector("#loginName");
 let canvasContainer = document.querySelector("#containerCanvas");
 let canvas;
 let canvasAvatar;
-let pickerBtn = document.createElement("button");
+let pickerBtn = document.querySelector(".tool--mag");
 let picker = null;
 let peer = null;
+let showpicker;
+let hidepicker;
 createSession.addEventListener("click", () => {
     try {
         peer = new Node(loginName.value);

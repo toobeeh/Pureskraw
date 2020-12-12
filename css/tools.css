@@ -9,6 +9,37 @@
     margin-left:0;
     margin-right:0;
 }
+.tool {
+    height: 3.5rem;
+    width: 3.5rem;
+    border: 2px solid black;
+    border-radius: 0.5rem;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-left: .25rem;
+    margin-right: .25rem;
+    filter: grayscale(100%);
+    /*background-size: 80% 80%;*/
+}
+.tool:hover{
+    filter:none;
+}
+.tool--selected {
+    filter: none;
+}
+.tool--pen {
+    background-image: url(https://skribbl.io/res/pen.gif);
+}
+.tool--fill {
+    background-image: url(https://skribbl.io/res/filltool.gif);
+}
+.tool--erase {
+    background-image: url(https://skribbl.io/res/rubber.gif);
+}
+.tool--mag {
+    background-image: url(/mag.gif);
+    filter: none;
+}
 #containerAgent {
     min-height: 15%;
     max-height: 15%;
