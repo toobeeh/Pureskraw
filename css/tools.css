@@ -37,7 +37,7 @@
     background-image: url(https://skribbl.io/res/rubber.gif);
 }
 .tool--mag {
-    background-image: url(/mag.gif);
+    background-image: url(res/mag.gif);
     filter: none;
 }
 #containerAgent {
