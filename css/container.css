@@ -125,3 +125,24 @@ input {
     box-sizing:border-box;
     max-width:100%;
 }
+
+input[type="range"]{
+    margin-top:0;
+}
+
+.playerContainer {
+    width: calc(100% - 2rem);
+    font-size: 1.1rem;
+    justify-content: left;
+    padding: 0.8rem;
+    align-items: center;
+    border-bottom: 2px solid grey;
+}
+.playerContainer img{
+    height:4rem;
+}
+    .playerContainer span {
+        margin-left: 1rem;
+        line-break: anywhere;
+        max-width: 15rem;
+    }

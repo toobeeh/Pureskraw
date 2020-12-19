@@ -1,4 +1,4 @@
-// ################
+﻿// ################
 // Define constants
 // ################
 const titleSize = { w: 1000, h: 600 };
@@ -10,7 +10,7 @@ const sessionColor = new Color({ hex: "#037d14" });
 // Generic re-usable functions
 // ###########################
 let setTitleCanvas = (w, h, titleContainer, canvasContainer) => {
-    let titlecanvas = new Canvas(w, h, 5, 5, { erase: "", brush: "", fill: "", clear: "" });
+    let titlecanvas = new Canvas(w, h, null, 10, 10, { erase: "", brush: "", fill: "", clear: "" });
     canvasContainer.appendChild(titlecanvas.element);
     canvasContainer.style.height = titlecanvas.height + "px";
     canvasContainer.style.width = titlecanvas.width + "px";
@@ -20,17 +20,39 @@ let setTitleCanvas = (w, h, titleContainer, canvasContainer) => {
     return titlecanvas;
 }
 
+let setSessionInfo = (code, height, width, admin) => {
+    document.querySelector("#containerSessionInfo").innerHTML = "🔗 ID: <br> - " + code + "<br>🖼️ Size: <br> - " + height + " x " + width + "<br>👑 Owner: <br> - " + admin;
+}
+
+let addOrUpdateLobbyPlayer = (peerID, playername, avatarDataURL, admin = false) => {
+    let containerSession = document.querySelector("#containerSession");
+    let player = document.createElement("div");
+    player.classList.add("playerContainer","flex", "flex--row");
+    let avatar = document.createElement("img");
+    avatar.src = avatarDataURL;
+    let name = document.createElement("span");
+    name.innerHTML = playername + (admin ? " ~ 👑" : "") ;
+    player.id = "player" + peerID;
+    player.appendChild(avatar);
+    player.appendChild(name);
+    let existing = document.querySelector("#" + player.id);
+    if (existing) existing = player;
+    else containerSession.appendChild(player);
+}
+
 let setAvatarCanvas = (replaceCanvas) => {
-    let canvasAvatar = new Canvas(150, 150, 3, 3, { erase: "e", brush: "b" }, "canvasCreateAvatar");
+    let canvasAvatar = new Canvas(150, 150, null, 10, 10, { erase: "e", brush: "b" }, "canvasCreateAvatar");
     replaceCanvas.replaceWith(canvasAvatar.element);
     canvasAvatar.element.style = "border: 2px solid black; border-radius:5px;";
     return canvasAvatar;
 }
 
 let setGameCanvas = (w, h, canvasContainer) => {
-    let canvasgame = new Canvas(w, h);
+    let canvasgame = new Canvas(w, h, pickerBtn);
     canvasContainer.querySelector("#canvasDrawing").remove();
     canvasContainer.appendChild(canvasgame.element);
+    canvasContainer.style.height = h + "px";
+    canvasContainer.style.width = w + "px";
     canvasgame.setKeyAction("Z", () => { canvas.lastSnapshot(); });
     canvasgame.setKeyAction("Y", () => { canvas.nextSnapshot(); });
     let setActiveTool = (tool) => {
@@ -40,6 +62,7 @@ let setGameCanvas = (w, h, canvasContainer) => {
     document.querySelector(".tool--pen").addEventListener("pointerdown", (e) => { canvas.brush.mode = "brush"; setActiveTool(e.target); });
     document.querySelector(".tool--fill").addEventListener("pointerdown", (e) => { canvas.brush.mode = "fill"; setActiveTool(e.target);});
     document.querySelector(".tool--erase").addEventListener("pointerdown", (e) => { canvas.brush.mode = "erase"; setActiveTool(e.target); });
+    document.querySelector(".tool--pipette").addEventListener("pointerdown", (e) => { canvas.brush.mode = "pipette"; setActiveTool(e.target); });
     return canvasgame;
 }
 
@@ -65,7 +88,7 @@ let addChatError = (error) => {
             msg = "You didn't enter a name.";
             break;
         default:
-            msg = "An unknown error occured :c";
+            msg = "An unknown error occured :c " + error;
     }
     addChatMessage("Error", msg, errorColor);
 }
@@ -81,6 +104,14 @@ let setPickerButton = (pickerElement, canvasElement) => {
     hidepicker = () => { document.querySelector("#color_picker_bg").dispatchEvent(new CustomEvent("click")); canvasElement.setKeyAction("AltGraph", showpicker); };
     canvasElement.setKeyAction("AltGraph", showpicker);
     return picker;
+}
+
+let initSliders = () =>{
+    document.querySelectorAll("input[type='range']").forEach(s => {
+        s.addEventListener("input", e => {
+            e.target.parentElement.querySelector("span").textContent = e.target.value + "px";
+        })
+    });
 }
 
 let ifNotThen = (val1, val2) => { return val1 ? val1 : val2;}
@@ -105,7 +136,7 @@ let showpicker;
 let hidepicker;
 createSession.addEventListener("click", () => {
     try {
-        peer = new Node(loginName.value);
+        peer = new Node(loginName.value, canvasAvatar.element.toDataURL("2d"));
     }
     catch(e){
         addChatError(e);
@@ -113,10 +144,13 @@ createSession.addEventListener("click", () => {
     }
     peer.events.addEventListener("create", e => {
         addChatMessage("System", `Session with id ${e.detail.id} created.`, systemColor);
-        canvas = setGameCanvas(titleSize.w, titleSize.h, canvasContainer);
+        canvas = setGameCanvas(document.querySelector("#createWidth").value, document.querySelector("#createHeight").value, canvasContainer);
         picker = setPickerButton(pickerBtn, canvas);
+        peer.canvasProperties = { height: canvas.height, width: canvas.width };
         canvas.peer = peer;
         titleScreen.style.display = "none";
+        setSessionInfo(e.detail.id, canvas.height, canvas.width, peer.username);
+        addOrUpdateLobbyPlayer(peer.id, peer.username, canvasAvatar.element.toDataURL("2d"), true);
     });
     peer.events.addEventListener("connect", e => {
         addChatMessage("System", `End with username ${e.detail.username} connected to session.`, systemColor);
@@ -126,7 +160,7 @@ createSession.addEventListener("click", () => {
 });
 joinSession.addEventListener("click", () => {
     try {
-        peer = new End(sessionCode.value.trim(), loginName.value.trim());
+        peer = new End(sessionCode.value.trim(), loginName.value.trim(), canvasAvatar.element.toDataURL("2d"));
     }
     catch (e) {
         addChatError(e);
@@ -134,10 +168,11 @@ joinSession.addEventListener("click", () => {
     }
     peer.events.addEventListener("connect", e => {
         addChatMessage("System",`Connected to session with node username ${e.detail.username}.`, systemColor);
-        canvas = setGameCanvas(titleSize.w, titleSize.h, canvasContainer);
+        canvas = setGameCanvas(e.detail.canvasHeight, e.detail.canvasWidth, canvasContainer);
         picker = setPickerButton(pickerBtn, canvas);
         canvas.peer = peer;
         titleScreen.style.display = "none";
+        peer.send(messageGenerator.lobbyPlayer(peer.id, peer.username, peer.avatarData, false));
     });
 });
 
@@ -165,4 +200,5 @@ document.addEventListener("DOMContentLoaded", () => {
     canvasAvatar = setAvatarCanvas(document.querySelector("#canvasAvatar"));
     addChatMessage("System", "Welcome! <3", systemColor);
     addChatMessage("System", "Create a session or enter a session code to join someone!", systemColor);
+    initSliders();
 });

@@ -28,14 +28,14 @@ class Canvas {
     }
     
     // constructor; set properties and load events
-    constructor(width, height, brushMinSize = 3, brushMaxSize = 50,
-            keyOptions = { erase: "e", brush: "b", fill: "f", clear: "escape" }, id = "canvasDrawing") {
+    constructor(width, height, colorElement = null, brushMinSize = 3, brushMaxSize = 50,
+            keyOptions = { erase: "e", brush: "b", fill: "f", clear: "escape", pipette: "p" }, id = "canvasDrawing") {
         this._element = document.createElement("canvas");
         this._element.id = id;
         this._element.height = height; 
         this._element.width = width;
         this.clearCanvas();
-        this.brush = new Brush(this.element, brushMinSize, brushMaxSize, brushMinSize);
+        this.brush = new Brush(this.element, colorElement, brushMinSize, brushMaxSize, brushMinSize);
         this.initDrawingHandlers();
         this.element.style.imageRendering = "pixelated";
         this.keyOptions = keyOptions;
@@ -113,6 +113,9 @@ class Canvas {
             case this.keyOptions.fill.toLowerCase():
                 this.brush.mode = "fill";
                 break;
+            case this.keyOptions.pipette.toLowerCase():
+                this.brush.mode = "pipette";
+                break;
         }
     }
 
@@ -127,6 +130,11 @@ class Canvas {
         if (this.brush.ink && e.pointerType == "pen") this.brush.size = Math.round(this.brush.sizeMax * e.pressure);
         let rect = this.element.getBoundingClientRect();
         this.brush.movePosition(e.clientX - rect.left, e.clientY - rect.top, false);
+        if (this.brush.mode == "pipette") {
+            let pixel = this.getPixel(this.getImageData(0, 0, this.width, this.height), Math.round(this.brush.position.x), Math.round(this.brush.position.y));
+            this.brush.color = Brush.getCode(new Color({r: pixel[0], g: pixel[1], b: pixel[2]  }));
+            return;
+        }
         let command = this.getDrawCommand();
         this.addDrawCommands([command]);
         //end.send(messageGenerator.drawcommand(end.id, end._username, command));
@@ -482,9 +490,11 @@ class Brush {
     sizeMax;
     _size;
     canvasElement;
+    colorElement;
 
-    constructor(canvas, sizemin = 3, sizemax = 50, initsize = 10, initcolor = 1) {
+    constructor(canvas, colorElem = null, sizemin = 3, sizemax = 50, initsize = 10, initcolor = 1) {
         this.canvasElement = canvas;
+        this.colorElement = colorElem;
         this.position = { x: null, y: null, last: { x: null, y: null } };
         this.sizeMin = sizemin;
         this.sizeMax = sizemax;
@@ -504,6 +514,11 @@ class Brush {
     set color(value) {
         this._color = value;
         this.updateCursor();
+        if (this.colorElement) {
+            let col = Brush.getColor(value);
+            this.colorElement.style.backgroundColor = col.hex;
+            this.colorElement.setProperty("data-color", col.hex);
+        }
     }
 
     get mode() { return this._mode; }
@@ -527,6 +542,9 @@ class Brush {
         }
         else if (this.mode == "fill") {
             this.canvasElement.style.cursor = "url(https://skribbl.io/res/fill_graphic.png) 7 38, default";
+        }
+        else if (this.mode == "pipette") {
+            this.canvasElement.style.cursor = "url(https://cdn.discordapp.com/attachments/772085833690775552/789828938804756480/pipette.gif) 7 38, default";
         }
     }
 
@@ -569,7 +587,7 @@ class Color {
             this._b = parseInt("0x" + hex.substring(4, 6));
         }
         // create a color by single r, g and b values
-        else if (color.r && color.g && color.b) {
+        else if (color.r != null && color.g != null && color.b != null) {
             this._r = color.r;
             this._g = color.g;
             this._b = color.b;
